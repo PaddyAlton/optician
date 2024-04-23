@@ -22,8 +22,8 @@ pip install "optician[bigquery]"
 ```
 
 ## Setup
-1. Create the Optician configuration file `.optician/config.json` (you can name it another way) somewhere in your computer (we suggest inside the dbt or Looker repo)
-2. Create the environment variable `OPTICIAN_CONFIG_FILE` which will be the absolute path to the file created in 1
+1. Create the Optician configuration file `.optician/config.json` (you can name it another way) somewhere in your computer (we suggest inside the dbt or Looker repo); alternatively the standard `pyproject.toml` format is supported.
+2. Create the environment variable `OPTICIAN_CONFIG_FILE` which will be the absolute path to the file created in 1 (or to your project's `pyproject.toml`)
 3. You need to be able to connect to your database. For BigQuery, you can connect either by Oauth or Service Account.
 4. [Optional] Create an environment variable `GH_TOKEN` for your GitHub personal token. You need to create this token in [GitHub](https://github.com/settings/tokens) with read:project, repo, user:email permissions. This will allow you to commit your Looker views directly to the Looker repository.
 
@@ -87,6 +87,30 @@ Example of a config file:
 }
 ```
 
+Alternatively, these options can be specified in your project's `pyproject.toml`. The options are the same. An example of a snippet from such a file follows:
+
+```toml
+[tool.optician]
+primary_key_columns = ["id", "pk", "primary_key"]
+ignore_column_types = ["GEOGRAPHY", "ARRAY"]
+ignore_modes = ["REPEATED"]
+timeframes = [
+    "raw",
+    "time",
+    "date",
+    "week",
+    "month",
+    "month_name",
+    "month_num",
+    "quarter",
+    "quarter_of_year",
+    "year",
+]
+hide_all_fields = false
+capitalize_ids = true
+time_suffixes = ["_at", "_date", "_time", "_ts", "_timestamp", "_datetime"]
+order_by = "alpha"
+```
 
 ## Commands
 

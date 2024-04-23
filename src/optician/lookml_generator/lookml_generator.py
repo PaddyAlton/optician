@@ -1,7 +1,13 @@
 from optician.db_client import db_client as db
 import os
+import sys
 import json
 from optician.logger import Logger
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import toml as tomllib
 
 CONSOLE_LOGGER = Logger().get_logger()
 
@@ -57,14 +63,24 @@ class Config:
         self._custom_config = self._read_custom_config()
         self._test_config()
 
-    def _read_custom_config(self):
+    def _read_custom_config(self) -> dict:
         if self._config_file_path is None:
             return {}
+        elif self._config_file_path.endswith("pyproject.toml"):
+            with open("pyproject.toml") as file:
+                config = tomllib.loads(file.read())
+            return self._read_toml_config(config)
         else:
             try:
                 return json.load(open(self._config_file_path))
             except:
                 raise Exception("Invalid config file path")
+
+    @staticmethod
+    def _read_toml_config(config: dict) -> dict:
+        tool = config.get("tool", {})
+        optician_config = tool.get("optician", {})
+        return optician_config
 
     def get_property(self, property_name, default_value=None):
         if property_name in self._custom_config.keys():
